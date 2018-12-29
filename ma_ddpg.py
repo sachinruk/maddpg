@@ -12,12 +12,6 @@ import copy
 BUFFER_SIZE = int(1e4)  # replay buffer size
 BATCH_SIZE = 256        # minibatch size
 
-TAU = 1e-3              # for soft update of target parameters
-ACTOR_LR = 1e-4               # learning rate 
-CRITIC_LR = 1e-3
-
-GAMMA = 0.99 
-
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
             
 
@@ -70,13 +64,10 @@ class MADDPGAgent():
         """
         
         states, actions, rewards, next_states, dones = self.memory.sample()
-        # N = len(states)
 
         actions_pred = []
         next_actions = []
-        # for i, (p, pt) in enumerate(zip(self.policy_local, self.policy_target)):
-        #     actions_pred.append(p(states[:,i,:]))
-        #     next_actions.append(pt(next_states[:,i,:]))
+        
         for i,agent in enumerate(self.agents):
             actions_pred.append(agent.policy_local(states[:,i,:]))
             next_actions.append(agent.policy_target(next_states[:,i,:]))

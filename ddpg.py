@@ -9,11 +9,6 @@ import copy
 
 from models import Policy, Critic
 
-# from collections import deque, namedtuple
-
-BUFFER_SIZE = int(1e4)  # replay buffer size
-BATCH_SIZE = 512        # minibatch size
-
 TAU = 1e-3              # for soft update of target parameters
 ACTOR_LR = 1e-4               # learning rate 
 CRITIC_LR = 1e-3
@@ -55,10 +50,10 @@ class DDPGAgent():
 
         self.__copy_parameters__()
         
-        self.noise = OUNoise(action_size, seed=agent_id)
-        self.noise_mul = 0.5
-        # self.noise = GaussianNoise(action_size, seed=42)
-
+        # self.noise = OUNoise(action_size, seed=agent_id)
+        self.noise = GaussianNoise(action_size, seed=42)
+        self.noise_mul = 1
+        
         self.train_t = 0 # training iterations
 
     def __copy_parameters__(self):
@@ -145,8 +140,8 @@ class DDPGAgent():
 
     def reset(self):
         self.noise.reset()
-        if self.train_t >= 7500:
-            self.noise_mul = 0
+        # if self.train_t >= 7500:
+        #     self.noise_mul = 0
             
     def save_network(self):
         self.bestq_local = [net.state_dict() for net in self.qnetwork_local]
@@ -180,7 +175,7 @@ class DDPGAgent():
 class GaussianNoise:
     """Ornstein-Uhlenbeck process."""
 
-    def __init__(self, size, seed, sigma=0.2, decay=0.999):
+    def __init__(self, size, seed, sigma=0.2, decay=0.99):
         """Initialize parameters and noise process."""
         self.size = size
         self.sigma = sigma

@@ -27,8 +27,11 @@ class Policy(nn.Module):
         self.fc_mu[-1].weight.data.uniform_(-3e-3, 3e-3)
         
     def forward(self, x):
-        in_shape = x.shape
-        x = self.bn(x.reshape(-1, self.input_dim)).reshape(*in_shape)
+        # in_shape = x.shape
+        # if len(x) > 1:
+        #     import pdb; pdb.set_trace()
+        # x = self.bn(x.reshape(-1, self.input_dim)).reshape(*in_shape)
+        x = self.bn(x)
         for layer in self.fc_mu[:-1]:
             x = F.relu(layer(x))
             
@@ -54,11 +57,8 @@ class Critic(nn.Module):
         self.fc[-1].weight.data.uniform_(-3e-3, 3e-3)
         
     def forward(self, x, action):
-#         in_shape = x.shape
-#         x = self.bn(x.reshape(-1, self.input_dim)).reshape(*in_shape)
-#         for layer in self.fc1:
-#             x = F.relu(layer(x))
-        
+        # if len(x) > 1:
+        #     import pdb; pdb.set_trace()
         x = torch.cat([x, action], dim=-1)
         x = self.bn(x)
         for layer in self.fc[:-1]:
